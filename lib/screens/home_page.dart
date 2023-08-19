@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:newz_app/model/news_model.dart';
 import 'package:newz_app/service/newz_api_service.dart';
 import 'package:newz_app/widgets/const.dart';
+import 'package:newz_app/widgets/error_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,7 +18,7 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
 
-    newsList = await NewsApiService().fetchNewsData();
+    newsList = await NewsApiService.fetchNewsData();
   }
 
   int currentIndex = 1;
@@ -88,16 +89,54 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              ListView.builder(
-                // scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: newsList.length,
-                itemBuilder: (_, index) {
-                  return Container(
-                    height: 350,
-                    width: double.infinity,
-                    // child: Image.network("${newsList[index].urlToImage}"),
-                    child: Text("${newsList[index].content}"),
+              FutureBuilder<List<Articles>>(
+                future: NewsApiService.fetchNewsData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return ErrorScreen();
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (_, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 10.0),
+                          height: 220,
+                          width: double.infinity,
+
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${snapshot.data![index].title}",
+                                style:
+                                    myStyle(15, Colors.black, FontWeight.w700),
+                              ),
+                              Image.network(
+                                "${newsList[index].urlToImage}",
+                                fit: BoxFit.fill,
+                              ),
+                            ],
+                          ),
+                          // child: Text("${snapshot.data![index].title}"),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

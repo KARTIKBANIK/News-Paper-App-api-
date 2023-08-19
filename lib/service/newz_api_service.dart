@@ -20,7 +20,7 @@ class NewsApiService {
     print("Responseeee      isssssss sss : ${response.body}");
   }*/
 
-  Future<List<Articles>> fetchNewsData() async {
+  static Future<List<Articles>> fetchNewsData() async {
     List<Articles> newsList = [];
     var link = Uri.parse(
         "https://newsapi.org/v2/everything?q=bitcoin&apiKey=ad3e33e29eb7452e824fa3ac498c3054");

@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class NewsModel {
   String? status;
   int? totalResults;
